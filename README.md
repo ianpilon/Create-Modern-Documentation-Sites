@@ -4,6 +4,7 @@ A comprehensive guide and template for creating beautiful, modern documentation 
 
 ## 🚀 Features
 
+- 🤖 **Built-in AI chat panel** (Groq-powered, with BM25 keyword retrieval over your wiki content)
 - 🌓 Dark/Light mode support
 - 🔍 Full-text search
 - 📱 Mobile responsive design
@@ -14,6 +15,21 @@ A comprehensive guide and template for creating beautiful, modern documentation 
 - 🔄 Hot reload in development
 - 🎨 Customizable theme
 - 📝 MDX support (Markdown + React components)
+
+## 💬 AI Chat
+
+A pill-shaped floating button labeled "Ai" sits on the bottom-right of every page. Click it (or press `Cmd+/`) to ask questions about your wiki content in plain language. Answers cite the wiki pages they draw from with inline clickable links.
+
+**How it works:** per question, the API ranks all `.mdx` pages by BM25 against the user's query, sends the top 4 most relevant pages (plus the page they're viewing) to Groq's Llama 3.3 70B, and asks for an answer with markdown citations.
+
+**Setup:**
+1. Copy `.env.local.example` to `.env.local`
+2. Get a free [Groq API key](https://console.groq.com/keys) and paste it as `GROQ_API_KEY=...`
+3. `npm run dev`
+
+On Vercel, set `GROQ_API_KEY` as an environment variable instead.
+
+**Customizing:** the chat button matches your Nextra primary color automatically (via `--nextra-primary-hue`). Edit `src/components/WikiChat.jsx` to change the suggested prompts.
 
 ## 🛠️ Tech Stack
 
