@@ -106,7 +106,7 @@ File name: ${sourceName}
 
 Source text (may be truncated):
 \`\`\`
-${sourceText.slice(0, 60000)}
+${sourceText.slice(0, 16000)}
 \`\`\`
 
 # What to produce
@@ -158,7 +158,7 @@ async function callGroq(prompt, apiKey) {
       model: MODEL,
       messages: [{ role: 'user', content: prompt }],
       temperature: 0.2,
-      max_tokens: 12000,
+      max_tokens: 7000,
       response_format: { type: 'json_object' },
     }),
   })
