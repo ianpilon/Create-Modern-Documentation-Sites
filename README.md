@@ -18,7 +18,7 @@ A comprehensive guide and template for creating beautiful, modern documentation 
 
 ## 💬 AI Chat
 
-A pill-shaped floating button labeled "Ai" sits on the bottom-right of every page. Click it (or press `Cmd+/`) to ask questions about your wiki content in plain language. Answers cite the wiki pages they draw from with inline clickable links.
+A pill-shaped floating button labeled "Ai" sits on the bottom-right of every page. Click it (or press `Cmd+/`) to ask questions about your wiki content in plain language. Answers cite the wiki pages they draw from with inline clickable links. Theme-aware (dark + light) and chat history persists across in-app navigation until you hit Reset.
 
 **How it works:** per question, the API ranks all `.mdx` pages by BM25 against the user's query, sends the top 4 most relevant pages (plus the page they're viewing) to Groq's Llama 3.3 70B, and asks for an answer with markdown citations.
 
@@ -30,6 +30,23 @@ A pill-shaped floating button labeled "Ai" sits on the bottom-right of every pag
 On Vercel, set `GROQ_API_KEY` as an environment variable instead.
 
 **Customizing:** the chat button matches your Nextra primary color automatically (via `--nextra-primary-hue`). Edit `src/components/WikiChat.jsx` to change the suggested prompts.
+
+## 📥 Drag-drop source ingest
+
+A second floating button "+ Add source" lets you drop a `.md`, `.txt`, or `.pdf` directly into the running site. The server extracts the text, asks Groq to draft a summary page plus 3 to 8 concept pages following a Karpathy-style wiki format, then opens a pull request on your GitHub repo with the new files. Review the diff and merge; Vercel auto-redeploys with the new pages.
+
+**How it works:** `POST /api/ingest` parses the upload with `formidable`, extracts text (`.md`/`.txt` directly, `.pdf` via [`unpdf`](https://github.com/unjs/unpdf)), calls Groq with the file content plus the current index for context, then uses Octokit to create a branch and open a PR.
+
+**Required env vars (in addition to GROQ_API_KEY):**
+- `GITHUB_TOKEN` — fine-grained PAT with `Contents: Read and write` + `Pull requests: Read and write` on this repo. Generate at https://github.com/settings/personal-access-tokens/new.
+- `GITHUB_REPO_OWNER` — your GitHub username or org (e.g. `ianpilon`).
+- `GITHUB_REPO_NAME` — the repo name (e.g. `my-wiki`).
+- `GITHUB_BASE_BRANCH` — optional, defaults to `main`.
+- `WIKI_TOPIC` — optional, injected into the LLM prompt for better outputs (e.g. `information foraging theory`).
+
+On Vercel, paste all of these into Settings → Environment Variables (Production + Preview + Development). Paste the `GITHUB_TOKEN` value directly into Vercel, never into a chat or other tool.
+
+**Limits:** 10 MB file size, 60 second serverless function timeout (Vercel Hobby). Scanned PDFs without selectable text will fail with a clear error message. Large PDFs may need to be split.
 
 ## 🛠️ Tech Stack
 
